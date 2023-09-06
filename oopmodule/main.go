@@ -5,6 +5,7 @@ import "oopmodule/singleton"
 import "oopmodule/factory"
 import . "oopmodule/adapter"
 import . "oopmodule/iterator"
+import . "oopmodule/builder"
 
 func triggerSingleton() {
 	for i := 0; i < 5; i++ {
@@ -56,6 +57,25 @@ func runIterator() {
 	}
 }
 
+func runBuilder() {
+	normalBuilder := GetBuilder("normal")
+	iglooBuilder := GetBuilder("igloo")
+
+    director := NewDirector(normalBuilder)
+    normalHouse := director.BuildHouse()
+
+    fmt.Printf("Normal House Door Type: %s\n", normalHouse.DoorType)
+    fmt.Printf("Normal House Window Type: %s\n", normalHouse.WindowType)
+    fmt.Printf("Normal House Num Floor: %d\n", normalHouse.Floor)
+
+	director.SetBuilder(iglooBuilder)
+	iglooHouse := director.BuildHouse()
+
+	fmt.Printf("\nIgloo House Door Type: %s\n", iglooHouse.DoorType)
+    fmt.Printf("Igloo House Window Type: %s\n", iglooHouse.WindowType)
+    fmt.Printf("Igloo House Num Floor: %d\n", iglooHouse.Floor)
+}
+
 func main() {
 	fmt.Println("Singleton: ")
 	triggerSingleton()
@@ -68,4 +88,7 @@ func main() {
 
 	fmt.Println("Iterator: ")
 	runIterator()
+
+	fmt.Println("Builder: ")
+	runBuilder()
 }
