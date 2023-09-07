@@ -1,11 +1,14 @@
 package main
 
 import "fmt"
+import "os"
 import "oopmodule/singleton"
 import "oopmodule/factory"
+import "github.com/akamensky/argparse"
 import . "oopmodule/adapter"
 import . "oopmodule/iterator"
 import . "oopmodule/builder"
+import . "oopmodule/observer"
 
 func triggerSingleton() {
 	for i := 0; i < 5; i++ {
@@ -76,19 +79,64 @@ func runBuilder() {
     fmt.Printf("Igloo House Num Floor: %d\n", iglooHouse.Floor)
 }
 
+func runObserver() {
+	shirtItem := NewItem("Nike Shirt")
+
+    observerFirst := &Customer{Id: "abc@gmail.com"}
+    observerSecond := &Customer{Id: "xyz@gmail.com"}
+
+    shirtItem.Register(observerFirst)
+    shirtItem.Register(observerSecond)
+
+    shirtItem.UpdateAvailability()
+}
+
 func main() {
-	fmt.Println("Singleton: ")
-	triggerSingleton()
+	parser := argparse.NewParser("print", "Prints provided string to stdout")
 
-	fmt.Println("Factory: ")
-	runFactory()
+	var singletonFlag *bool = parser.Flag("s", "singleton", &argparse.Options{Required: false, Help: "Flag to execute singleton"})
+	var factoryFlag *bool = parser.Flag("f", "factory", &argparse.Options{Required: false, Help: "Flag to execute factory"})
+	var adapterFlag *bool = parser.Flag("a", "adapter", &argparse.Options{Required: false, Help: "Flag to execute adapter"})
+	var iteratorFlag *bool = parser.Flag("i", "iterator", &argparse.Options{Required: false, Help: "Flag to execute iterator"})
+	var builderFlag *bool = parser.Flag("b", "builder", &argparse.Options{Required: false, Help: "Flag to execute builder"})
+	var observerFlag *bool = parser.Flag("o", "observer", &argparse.Options{Required: false, Help: "Flag to execute observer"})
 
-	fmt.Println("Adapter: ")
-	runAdapter()
+	err := parser.Parse(os.Args)
+	if err != nil {
+		// In case of error print error and print usage
+		// This can also be done by passing -h or --help flags
+		fmt.Print(parser.Usage(err))
+	}
 
-	fmt.Println("Iterator: ")
-	runIterator()
 
-	fmt.Println("Builder: ")
-	runBuilder()
+	if *singletonFlag {
+		fmt.Println("Singleton: ")
+		triggerSingleton()
+	}
+
+	if *factoryFlag {
+		fmt.Println("Factory: ")
+		runFactory()
+	}
+
+	if *adapterFlag {
+		fmt.Println("Adapter: ")
+		runAdapter()
+	}
+
+	if *iteratorFlag {
+		fmt.Println("Iterator: ")
+		runIterator()
+	}
+
+	if *builderFlag {
+		fmt.Println("Builder: ")
+		runBuilder()
+	}
+
+	if *observerFlag {
+		fmt.Println("Observer: ")
+		runObserver()
+	}
+	
 }
